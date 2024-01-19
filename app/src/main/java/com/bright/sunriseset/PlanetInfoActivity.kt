@@ -1,6 +1,6 @@
 package com.bright.sunriseset
 
-import android.content.Context
+import android.content.res.Configuration
 import android.icu.text.SimpleDateFormat
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -44,8 +44,13 @@ class PlanetInfoActivity : AppCompatActivity() {
             // If both sunrise and sunset times are available, localize and display them in Chinese
             if (sunriseTime != null && sunsetTime != null) {
                 // Localize sunrise and sunset times
-                val localizedSunrise = getLocalizedTime(sunriseTime, this@PlanetInfoActivity)
-                val localizedSunset = getLocalizedTime(sunsetTime, this@PlanetInfoActivity)
+//                val localizedSunrise = getLocalizedTime(sunriseTime, this@PlanetInfoActivity)
+//                val localizedSunset = getLocalizedTime(sunsetTime, this@PlanetInfoActivity)
+
+                val zhLocale = "zh"
+                setLocale(zhLocale)
+                val localizedSunrise = getLocalizedTime(sunriseTime, zhLocale)
+                val localizedSunset = getLocalizedTime(sunsetTime, zhLocale)
 
                 // Display localized times on TextViews
                 binding.textViewSunrise.text =
@@ -63,12 +68,9 @@ class PlanetInfoActivity : AppCompatActivity() {
      * @param context The application context to access resources and preferences.
      * @return A string representation of the localized time.
      */
-    private fun getLocalizedTime(time: LocalDateTime, context: Context): String {
-        // Retrieve the user's preferred language from the device settings
-        val userPreferredLanguage = Locale.getDefault().language
-
+    private fun getLocalizedTime(time: LocalDateTime, language: String): String {
         // Create a SimpleDateFormat with the user's preferred language
-        val sdf = SimpleDateFormat("hh:mm a", Locale(userPreferredLanguage))
+        val sdf = SimpleDateFormat("hh:mm a", Locale(language))
 
         // Format the LocalDateTime into a string using the specified SimpleDateFormat
         return sdf.format(
@@ -103,5 +105,13 @@ class PlanetInfoActivity : AppCompatActivity() {
             e.printStackTrace()
             null
         }
+    }
+
+    private fun setLocale(language: String) {
+        val locale = Locale(language)
+        val config = Configuration(resources.configuration)
+        Locale.setDefault(locale)
+        config.setLocale(locale)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 }
